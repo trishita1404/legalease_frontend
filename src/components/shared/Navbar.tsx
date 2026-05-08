@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Scale, Gavel, User, CheckCircle2, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Scale, Gavel, User, CheckCircle2, ArrowLeft } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
-import OtpVerify from "@/components/auth/OtpVerify"; 
+
 import {
   Dialog,
   DialogContent,
@@ -20,20 +20,21 @@ export default function Navbar() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
-  // Registration states: 1 = Role, 2 = Form, 3 = OTP
-  const [regStep, setRegStep] = useState<1 | 2 | 3>(1);
-  const [selectedRole, setSelectedRole] = useState<"lawyer" | "client" | null>(null);
-  const [userEmail, setUserEmail] = useState("");
+  // Registration states: 1 = Role, 2 = Form
+  const [regStep, setRegStep] = useState<1 | 2>(1);
+
+  const [selectedRole, setSelectedRole] = useState<
+    "lawyer" | "client" | null
+  >(null);
 
   // Reset registration state when closing dialog
   const handleRegisterOpenChange = (open: boolean) => {
     setIsRegisterOpen(open);
+
     if (!open) {
-      // Small delay to prevent visual flickering during close animation
       setTimeout(() => {
         setRegStep(1);
         setSelectedRole(null);
-        setUserEmail("");
       }, 300);
     }
   };
@@ -41,10 +42,11 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-        
+
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <Scale className="h-6 w-6 text-primary transition-transform group-hover:rotate-12" />
+
           <span className="text-xl font-bold tracking-tight text-foreground">
             LegalEase<span className="text-primary">+</span>
           </span>
@@ -52,14 +54,22 @@ export default function Navbar() {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/#features" className="hover:text-primary transition-colors">Features</Link>
-          <Link href="/#how-it-works" className="hover:text-primary transition-colors">How it Works</Link>
-          <Link href="/#about" className="hover:text-primary transition-colors">About</Link>
+          <Link href="/#features" className="hover:text-primary transition-colors">
+            Features
+          </Link>
+
+          <Link href="/#how-it-works" className="hover:text-primary transition-colors">
+            How it Works
+          </Link>
+
+          <Link href="/#about" className="hover:text-primary transition-colors">
+            About
+          </Link>
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-4">
-          
+
           {/* LOGIN DIALOG */}
           <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
             <DialogTrigger asChild>
@@ -67,21 +77,33 @@ export default function Navbar() {
                 Sign In
               </button>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-100 border-none shadow-2xl">
               <DialogHeader className="items-center text-center">
+
                 <div className="rounded-full bg-primary/10 p-3 mb-2">
                   <Scale className="h-6 w-6 text-primary" />
                 </div>
-                <DialogTitle className="text-2xl font-bold">Welcome Back</DialogTitle>
+
+                <DialogTitle className="text-2xl font-bold">
+                  Welcome Back
+                </DialogTitle>
+
                 <DialogDescription>
                   Enter your credentials to access your account.
                 </DialogDescription>
               </DialogHeader>
+
               <LoginForm onSuccess={() => setIsLoginOpen(false)} />
+
               <div className="mt-4 text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
-                <button 
-                  onClick={() => { setIsLoginOpen(false); setIsRegisterOpen(true); }} 
+
+                <button
+                  onClick={() => {
+                    setIsLoginOpen(false);
+                    setIsRegisterOpen(true);
+                  }}
                   className="text-primary font-semibold hover:underline"
                 >
                   Sign up
@@ -90,81 +112,124 @@ export default function Navbar() {
             </DialogContent>
           </Dialog>
 
-          {/* REGISTER & OTP DIALOG */}
+          {/* REGISTER DIALOG */}
           <Dialog open={isRegisterOpen} onOpenChange={handleRegisterOpenChange}>
+
             <DialogTrigger asChild>
               <Button className="rounded-full px-6 shadow-lg shadow-primary/20">
                 Get Started
               </Button>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-137.5 border-none shadow-2xl overflow-hidden p-0">
+
               <div className="p-8">
-                
-                {/* Conditional Back Button */}
+
+                {/* Back Button */}
                 {regStep === 2 && (
-                  <button 
+                  <button
                     onClick={() => setRegStep(1)}
                     className="mb-4 flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
                   >
-                    <ArrowLeft className="h-3 w-3" /> Back to Role Selection
+                    <ArrowLeft className="h-3 w-3" />
+                    Back to Role Selection
                   </button>
                 )}
 
                 <DialogHeader className="items-center text-center mb-6">
+
                   <div className="rounded-full bg-primary/10 p-3 mb-2">
-                    {regStep === 3 ? (
-                      <ShieldCheck className="h-6 w-6 text-primary" />
-                    ) : (
-                      <Scale className="h-6 w-6 text-primary" />
-                    )}
+                    <Scale className="h-6 w-6 text-primary" />
                   </div>
+
                   <DialogTitle className="text-2xl font-bold">
                     {regStep === 1 && "Create your account"}
                     {regStep === 2 && "Complete Registration"}
-                    {regStep === 3 && "Verify your email"}
                   </DialogTitle>
+
                   <DialogDescription>
-                    {regStep === 1 && "Select your role to get started with LegalEase+"}
-                    {regStep === 2 && `Joining as a ${selectedRole?.charAt(0).toUpperCase()}${selectedRole?.slice(1)}`}
-                    {regStep === 3 && "We've sent a code to your inbox"}
+                    {regStep === 1 &&
+                      "Select your role to get started with LegalEase+"}
+
+                    {regStep === 2 &&
+                      `Joining as a ${selectedRole
+                        ?.charAt(0)
+                        .toUpperCase()}${selectedRole?.slice(1)}`}
                   </DialogDescription>
+
                 </DialogHeader>
 
                 {/* STEP 1: ROLE SELECTION */}
                 {regStep === 1 && (
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                       <button
                         onClick={() => setSelectedRole("lawyer")}
                         className={`relative flex flex-col items-center p-6 rounded-xl border-2 transition-all text-center group ${
-                          selectedRole === "lawyer" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                          selectedRole === "lawyer"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <div className={`mb-3 rounded-full p-3 ${selectedRole === "lawyer" ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
+
+                        <div
+                          className={`mb-3 rounded-full p-3 ${
+                            selectedRole === "lawyer"
+                              ? "bg-primary text-white"
+                              : "bg-secondary text-primary"
+                          }`}
+                        >
                           <Gavel className="h-6 w-6" />
                         </div>
+
                         <h3 className="font-bold">Lawyer</h3>
-                        <p className="text-xs text-muted-foreground">Manage your practice.</p>
-                        {selectedRole === "lawyer" && <CheckCircle2 className="absolute top-3 right-3 h-5 w-5 text-primary animate-in zoom-in" />}
+
+                        <p className="text-xs text-muted-foreground">
+                          Manage your practice.
+                        </p>
+
+                        {selectedRole === "lawyer" && (
+                          <CheckCircle2 className="absolute top-3 right-3 h-5 w-5 text-primary animate-in zoom-in" />
+                        )}
                       </button>
 
                       <button
                         onClick={() => setSelectedRole("client")}
                         className={`relative flex flex-col items-center p-6 rounded-xl border-2 transition-all text-center group ${
-                          selectedRole === "client" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                          selectedRole === "client"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <div className={`mb-3 rounded-full p-3 ${selectedRole === "client" ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
+
+                        <div
+                          className={`mb-3 rounded-full p-3 ${
+                            selectedRole === "client"
+                              ? "bg-primary text-white"
+                              : "bg-secondary text-primary"
+                          }`}
+                        >
                           <User className="h-6 w-6" />
                         </div>
+
                         <h3 className="font-bold">Client</h3>
-                        <p className="text-xs text-muted-foreground">Find legal help.</p>
-                        {selectedRole === "client" && <CheckCircle2 className="absolute top-3 right-3 h-5 w-5 text-primary animate-in zoom-in" />}
+
+                        <p className="text-xs text-muted-foreground">
+                          Find legal help.
+                        </p>
+
+                        {selectedRole === "client" && (
+                          <CheckCircle2 className="absolute top-3 right-3 h-5 w-5 text-primary animate-in zoom-in" />
+                        )}
                       </button>
+
                     </div>
-                    <Button 
-                      className="w-full h-11" 
-                      disabled={!selectedRole} 
+
+                    <Button
+                      className="w-full h-11"
+                      disabled={!selectedRole}
                       onClick={() => setRegStep(2)}
                     >
                       Continue
@@ -175,25 +240,19 @@ export default function Navbar() {
                 {/* STEP 2: REGISTRATION FORM */}
                 {regStep === 2 && (
                   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                    <RegisterForm 
-                      role={selectedRole as "lawyer" | "client"} 
-                      onSuccess={(email: string) => {
-                        setUserEmail(email);
-                        setRegStep(3);
-                      }} 
+
+                    <RegisterForm
+                      role={selectedRole as "lawyer" | "client"}
+
+                      onSuccess={() => {
+                        setIsRegisterOpen(false);
+                        setIsLoginOpen(true);
+                      }}
                     />
+
                   </div>
                 )}
 
-                {/* STEP 3: OTP VERIFICATION */}
-                {regStep === 3 && (
-                  <div className="animate-in fade-in zoom-in duration-300">
-                    <OtpVerify 
-                       email={userEmail} 
-                       onSuccess={() => setIsRegisterOpen(false)} // FIX: This closes the dialog on success
-                    />
-                  </div>
-                )}
               </div>
             </DialogContent>
           </Dialog>
