@@ -161,11 +161,11 @@ function DocumentsContent() {
   // ===============================
   const handleDownload = (url: string) => {
 
-    window.open(
-      `${process.env.NEXT_PUBLIC_BASE_URL}${url}`,
-      "_blank"
-    );
-  };
+  window.open(
+    `https://legalease-backend-d2yt.onrender.com${url}`,
+    "_blank"
+  );
+};
 
   // ===============================
   // DELETE
