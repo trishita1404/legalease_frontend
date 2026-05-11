@@ -56,14 +56,18 @@ interface EventType {
   priority: "High" | "Medium" | "Normal";
 }
 
+interface UserRefType {
+  _id: string;
+}
+
 interface CaseType {
   _id: string;
 
   caseCode: string;
 
-  client: string;
+  client: string | UserRefType;
 
-  lawyer: string;
+  lawyer: string | UserRefType;
 }
 
 export default function CalendarPage() {
@@ -149,14 +153,20 @@ export default function CalendarPage() {
 
     mutationFn: async () => {
 
-      console.log("FORM DATA:", form);
+      console.log(
+        "FORM DATA:",
+        form
+      );
 
       const res = await api.post(
         "/users/events/create",
         form
       );
 
-      console.log("RESPONSE:", res.data);
+      console.log(
+        "RESPONSE:",
+        res.data
+      );
 
       return res.data;
     },
@@ -312,10 +322,16 @@ export default function CalendarPage() {
         selectedCase.caseCode,
 
       clientId:
-        selectedCase.client,
+        typeof selectedCase.client ===
+        "object"
+          ? selectedCase.client._id
+          : selectedCase.client,
 
       lawyerId:
-        selectedCase.lawyer,
+        typeof selectedCase.lawyer ===
+        "object"
+          ? selectedCase.lawyer._id
+          : selectedCase.lawyer,
     });
   };
 
