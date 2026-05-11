@@ -230,19 +230,26 @@ const createMutation = useMutation({
   // ===============================
   const handleAdd = () => {
 
-    if (
-      !form.caseId ||
-      !form.scheduleDateTime
-    ) {
+  console.log("BUTTON CLICKED");
 
-      return toast.error(
-        "Please fill required fields"
-      );
-    }
+  console.log("FORM:", form);
 
-    createMutation.mutate();
-  };
+  if (
+    !form.caseId ||
+    !form.scheduleDateTime
+  ) {
 
+    console.log("VALIDATION FAILED");
+
+    return toast.error(
+      "Please fill required fields"
+    );
+  }
+
+  console.log("MUTATION STARTED");
+
+  createMutation.mutate();
+};
   // ===============================
   // FILTER EVENTS
   // ===============================
