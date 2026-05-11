@@ -61,9 +61,13 @@ interface CaseType {
 
   caseCode: string;
 
-  client: string;
+  client: {
+    _id: string;
+  };
 
-  lawyer: string;
+  lawyer: {
+    _id: string;
+  };
 }
 
 export default function CalendarPage() {
@@ -104,7 +108,7 @@ export default function CalendarPage() {
     },
   });
 
-    // ===============================
+  // ===============================
   // FETCH CASES
   // ===============================
   const { data: cases = [] } = useQuery({
@@ -172,7 +176,10 @@ export default function CalendarPage() {
     },
 
     onError: () => {
-      toast.error("Failed to create schedule");
+
+      toast.error(
+        "Failed to create schedule"
+      );
     },
   });
 
@@ -255,9 +262,9 @@ export default function CalendarPage() {
 
       caseCode: selectedCase.caseCode,
 
-      clientId: selectedCase.client,
+      clientId: selectedCase.client._id,
 
-      lawyerId: selectedCase.lawyer,
+      lawyerId: selectedCase.lawyer._id,
     });
   };
 
@@ -270,12 +277,17 @@ export default function CalendarPage() {
       <div>
 
         <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+
           <CalendarDays className="h-6 w-6" />
+
           Hearing Schedule
+
         </h2>
 
         <p className="text-muted-foreground text-sm">
+
           Stay ahead of hearings and legal deadlines.
+
         </p>
 
       </div>
@@ -370,9 +382,11 @@ export default function CalendarPage() {
                   createMutation.isPending
                 }
               >
+
                 {createMutation.isPending
                   ? "Creating..."
                   : "Create Schedule"}
+
               </Button>
 
             </div>
