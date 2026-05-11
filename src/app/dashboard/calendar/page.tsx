@@ -61,13 +61,9 @@ interface CaseType {
 
   caseCode: string;
 
-  client: {
-    _id: string;
-  };
+  client: string;
 
-  lawyer: {
-    _id: string;
-  };
+  lawyer: string;
 }
 
 export default function CalendarPage() {
@@ -102,7 +98,9 @@ export default function CalendarPage() {
 
     queryFn: async () => {
 
-      const res = await api.get("/users/events");
+      const res = await api.get(
+        "/users/events"
+      );
 
       return res.data.data;
     },
@@ -145,67 +143,74 @@ export default function CalendarPage() {
   });
 
   // ===============================
-// CREATE EVENT
-// ===============================
-const createMutation = useMutation({
+  // CREATE EVENT
+  // ===============================
+  const createMutation = useMutation({
 
-  mutationFn: async () => {
+    mutationFn: async () => {
 
-    console.log("FORM DATA:", form);
+      console.log("FORM DATA:", form);
 
-    const res = await api.post(
-      "/users/events/create",
-      form
-    );
+      const res = await api.post(
+        "/users/events/create",
+        form
+      );
 
-    console.log("RESPONSE:", res.data);
+      console.log("RESPONSE:", res.data);
 
-    return res.data;
-  },
+      return res.data;
+    },
 
-  onSuccess: () => {
+    onSuccess: () => {
 
-    queryClient.invalidateQueries({
-      queryKey: ["calendar-events"],
-    });
+      queryClient.invalidateQueries({
+        queryKey: ["calendar-events"],
+      });
 
-    toast.success("Schedule added");
+      toast.success(
+        "Schedule created successfully"
+      );
 
-    setForm({
-      caseId: "",
-      caseCode: "",
-      clientId: "",
-      lawyerId: "",
-      scheduleDateTime: "",
-      priority: "Normal",
-    });
-  },
+      setForm({
+        caseId: "",
+        caseCode: "",
+        clientId: "",
+        lawyerId: "",
+        scheduleDateTime: "",
+        priority: "Normal",
+      });
+    },
 
-  onError: (error: unknown) => {
+    onError: (error: unknown) => {
 
-    const err = error as {
-      response?: {
-        data?: {
-          message?: string;
+      const err = error as {
+        response?: {
+          data?: {
+            message?: string;
+          };
         };
       };
-    };
 
-    console.log("CREATE ERROR:", err);
+      console.log(
+        "CREATE ERROR:",
+        err
+      );
 
-    toast.error(
-      err.response?.data?.message ||
-      "Failed to create schedule"
-    );
-  },
-});
+      toast.error(
+        err.response?.data?.message ||
+        "Failed to create schedule"
+      );
+    },
+  });
 
   // ===============================
   // DELETE EVENT
   // ===============================
   const deleteMutation = useMutation({
 
-    mutationFn: async (eventId: string) => {
+    mutationFn: async (
+      eventId: string
+    ) => {
 
       return await api.post(
         "/users/events/delete",
@@ -221,7 +226,9 @@ const createMutation = useMutation({
         queryKey: ["calendar-events"],
       });
 
-      toast.success("Schedule deleted");
+      toast.success(
+        "Schedule deleted"
+      );
     },
   });
 
@@ -230,26 +237,36 @@ const createMutation = useMutation({
   // ===============================
   const handleAdd = () => {
 
-  console.log("BUTTON CLICKED");
-
-  console.log("FORM:", form);
-
-  if (
-    !form.caseId ||
-    !form.scheduleDateTime
-  ) {
-
-    console.log("VALIDATION FAILED");
-
-    return toast.error(
-      "Please fill required fields"
+    console.log(
+      "BUTTON CLICKED"
     );
-  }
 
-  console.log("MUTATION STARTED");
+    console.log(
+      "FORM:",
+      form
+    );
 
-  createMutation.mutate();
-};
+    if (
+      !form.caseId ||
+      !form.scheduleDateTime
+    ) {
+
+      console.log(
+        "VALIDATION FAILED"
+      );
+
+      return toast.error(
+        "Please fill required fields"
+      );
+    }
+
+    console.log(
+      "MUTATION STARTED"
+    );
+
+    createMutation.mutate();
+  };
+
   // ===============================
   // FILTER EVENTS
   // ===============================
@@ -261,7 +278,8 @@ const createMutation = useMutation({
       ).toDateString();
 
       return (
-        eventDate === date?.toDateString()
+        eventDate ===
+        date?.toDateString()
       );
     }
   );
@@ -274,21 +292,30 @@ const createMutation = useMutation({
   ) => {
 
     const selectedCase = cases.find(
-      (c: CaseType) => c._id === e.target.value
+      (c: CaseType) =>
+        c._id === e.target.value
     );
 
     if (!selectedCase) return;
+
+    console.log(
+      "SELECTED CASE:",
+      selectedCase
+    );
 
     setForm({
       ...form,
 
       caseId: selectedCase._id,
 
-      caseCode: selectedCase.caseCode,
+      caseCode:
+        selectedCase.caseCode,
 
-      clientId: selectedCase.client._id,
+      clientId:
+        selectedCase.client,
 
-      lawyerId: selectedCase.lawyer._id,
+      lawyerId:
+        selectedCase.lawyer,
     });
   };
 
@@ -344,16 +371,18 @@ const createMutation = useMutation({
                   Select Case Code
                 </option>
 
-                {cases.map((item: CaseType) => (
+                {cases.map(
+                  (item: CaseType) => (
 
-                  <option
-                    key={item._id}
-                    value={item._id}
-                  >
-                    {item.caseCode}
-                  </option>
+                    <option
+                      key={item._id}
+                      value={item._id}
+                    >
+                      {item.caseCode}
+                    </option>
 
-                ))}
+                  )
+                )}
 
               </select>
 
@@ -362,11 +391,14 @@ const createMutation = useMutation({
                 type="datetime-local"
                 className="border rounded-md p-2 w-full"
 
-                value={form.scheduleDateTime}
+                value={
+                  form.scheduleDateTime
+                }
 
                 onChange={(e) =>
                   setForm({
                     ...form,
+
                     scheduleDateTime:
                       e.target.value,
                   })
@@ -393,9 +425,17 @@ const createMutation = useMutation({
                 }
               >
 
-                <option>High</option>
-                <option>Medium</option>
-                <option>Normal</option>
+                <option>
+                  High
+                </option>
+
+                <option>
+                  Medium
+                </option>
+
+                <option>
+                  Normal
+                </option>
 
               </select>
 
@@ -424,11 +464,15 @@ const createMutation = useMutation({
           <CardHeader className="bg-primary/5 border-b flex justify-between">
 
             <CardTitle>
-              Agenda for {date.toDateString()}
+              Agenda for{" "}
+              {date.toDateString()}
             </CardTitle>
 
             <Badge>
-              {filteredEvents.length} Events
+              {
+                filteredEvents.length
+              }{" "}
+              Events
             </Badge>
 
           </CardHeader>
@@ -437,7 +481,8 @@ const createMutation = useMutation({
 
             <ScrollArea className="h-96">
 
-              {filteredEvents.length === 0 ? (
+              {filteredEvents.length ===
+              0 ? (
 
                 <div className="flex flex-col items-center py-20 text-muted-foreground">
 
@@ -450,14 +495,17 @@ const createMutation = useMutation({
               ) : (
 
                 filteredEvents.map(
-                  (item: EventType) => (
+                  (
+                    item: EventType
+                  ) => (
 
                     <div
                       key={item._id}
                       className="p-5 border-b relative"
                     >
 
-                      {item.priority === "High" && (
+                      {item.priority ===
+                        "High" && (
 
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500" />
 
@@ -473,19 +521,31 @@ const createMutation = useMutation({
 
                             {new Date(
                               item.scheduleDateTime
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            ).toLocaleTimeString(
+                              [],
+                              {
+                                hour:
+                                  "2-digit",
+
+                                minute:
+                                  "2-digit",
+                              }
+                            )}
 
                           </p>
 
                           <p className="font-semibold">
-                            {item.caseCode}
+
+                            {
+                              item.caseCode
+                            }
+
                           </p>
 
                           <p className="text-sm text-muted-foreground">
+
                             Hearing Schedule
+
                           </p>
 
                         </div>
@@ -493,13 +553,18 @@ const createMutation = useMutation({
                         <div className="flex flex-col items-end gap-2">
 
                           <Badge>
-                            {item.priority}
+
+                            {
+                              item.priority
+                            }
+
                           </Badge>
 
                           {isEditable && (
 
                             <Button
                               size="sm"
+
                               variant="destructive"
 
                               onClick={() =>
@@ -508,7 +573,9 @@ const createMutation = useMutation({
                                 )
                               }
                             >
+
                               Delete
+
                             </Button>
 
                           )}
