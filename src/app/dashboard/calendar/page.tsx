@@ -145,43 +145,60 @@ export default function CalendarPage() {
   });
 
   // ===============================
-  // CREATE EVENT
-  // ===============================
-  const createMutation = useMutation({
+// CREATE EVENT
+// ===============================
+const createMutation = useMutation({
 
-    mutationFn: async () => {
+  mutationFn: async () => {
 
-      return await api.post(
-        "/users/events/create",
-        form
-      );
-    },
+    console.log("FORM DATA:", form);
 
-    onSuccess: () => {
+    const res = await api.post(
+      "/users/events/create",
+      form
+    );
 
-      queryClient.invalidateQueries({
-        queryKey: ["calendar-events"],
-      });
+    console.log("RESPONSE:", res.data);
 
-      toast.success("Schedule added");
+    return res.data;
+  },
 
-      setForm({
-        caseId: "",
-        caseCode: "",
-        clientId: "",
-        lawyerId: "",
-        scheduleDateTime: "",
-        priority: "Normal",
-      });
-    },
+  onSuccess: () => {
 
-    onError: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["calendar-events"],
+    });
 
-      toast.error(
-        "Failed to create schedule"
-      );
-    },
-  });
+    toast.success("Schedule added");
+
+    setForm({
+      caseId: "",
+      caseCode: "",
+      clientId: "",
+      lawyerId: "",
+      scheduleDateTime: "",
+      priority: "Normal",
+    });
+  },
+
+  onError: (error: unknown) => {
+
+    const err = error as {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+    };
+
+    console.log("CREATE ERROR:", err);
+
+    toast.error(
+      err.response?.data?.message ||
+      "Failed to create schedule"
+    );
+  },
+});
 
   // ===============================
   // DELETE EVENT
