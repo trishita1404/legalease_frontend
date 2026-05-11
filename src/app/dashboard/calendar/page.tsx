@@ -47,27 +47,15 @@ interface EventType {
 
   caseCode: string;
 
-  clientId: string;
-
-  lawyerId: string;
-
   scheduleDateTime: string;
 
   priority: "High" | "Medium" | "Normal";
-}
-
-interface UserRefType {
-  _id: string;
 }
 
 interface CaseType {
   _id: string;
 
   caseCode: string;
-
-  client: string | UserRefType;
-
-  lawyer: string | UserRefType;
 }
 
 export default function CalendarPage() {
@@ -83,10 +71,11 @@ export default function CalendarPage() {
   const [form, setForm] = useState({
     caseId: "",
     caseCode: "",
-    clientId: "",
-    lawyerId: "",
     scheduleDateTime: "",
-    priority: "Normal" as "High" | "Medium" | "Normal",
+    priority: "Normal" as
+      | "High"
+      | "Medium"
+      | "Normal",
   });
 
   const isEditable =
@@ -115,30 +104,13 @@ export default function CalendarPage() {
   // ===============================
   const { data: cases = [] } = useQuery({
 
-    queryKey: ["calendar-cases", user?.role],
+    queryKey: ["calendar-cases"],
 
     queryFn: async () => {
 
-      let res;
-
-      if (user?.role === "client") {
-
-        res = await api.get(
-          "/users/GetMyCases"
-        );
-
-      } else if (user?.role === "admin") {
-
-        res = await api.get(
-          "/users/GetAllCases"
-        );
-
-      } else {
-
-        res = await api.get(
-          "/users/GetLawyerCases"
-        );
-      }
+      const res = await api.get(
+        "/users/calendar-cases"
+      );
 
       return res.data.data;
     },
@@ -153,19 +125,9 @@ export default function CalendarPage() {
 
     mutationFn: async () => {
 
-      console.log(
-        "FORM DATA:",
-        form
-      );
-
       const res = await api.post(
         "/users/events/create",
         form
-      );
-
-      console.log(
-        "RESPONSE:",
-        res.data
       );
 
       return res.data;
@@ -184,8 +146,6 @@ export default function CalendarPage() {
       setForm({
         caseId: "",
         caseCode: "",
-        clientId: "",
-        lawyerId: "",
         scheduleDateTime: "",
         priority: "Normal",
       });
@@ -200,11 +160,6 @@ export default function CalendarPage() {
           };
         };
       };
-
-      console.log(
-        "CREATE ERROR:",
-        err
-      );
 
       toast.error(
         err.response?.data?.message ||
@@ -247,32 +202,15 @@ export default function CalendarPage() {
   // ===============================
   const handleAdd = () => {
 
-    console.log(
-      "BUTTON CLICKED"
-    );
-
-    console.log(
-      "FORM:",
-      form
-    );
-
     if (
       !form.caseId ||
       !form.scheduleDateTime
     ) {
 
-      console.log(
-        "VALIDATION FAILED"
-      );
-
       return toast.error(
         "Please fill required fields"
       );
     }
-
-    console.log(
-      "MUTATION STARTED"
-    );
 
     createMutation.mutate();
   };
@@ -308,11 +246,6 @@ export default function CalendarPage() {
 
     if (!selectedCase) return;
 
-    console.log(
-      "SELECTED CASE:",
-      selectedCase
-    );
-
     setForm({
       ...form,
 
@@ -320,18 +253,6 @@ export default function CalendarPage() {
 
       caseCode:
         selectedCase.caseCode,
-
-      clientId:
-        typeof selectedCase.client ===
-        "object"
-          ? selectedCase.client._id
-          : selectedCase.client,
-
-      lawyerId:
-        typeof selectedCase.lawyer ===
-        "object"
-          ? selectedCase.lawyer._id
-          : selectedCase.lawyer,
     });
   };
 
@@ -569,11 +490,9 @@ export default function CalendarPage() {
                         <div className="flex flex-col items-end gap-2">
 
                           <Badge>
-
                             {
                               item.priority
                             }
-
                           </Badge>
 
                           {isEditable && (
