@@ -104,21 +104,40 @@ export default function CalendarPage() {
     },
   });
 
-  // ===============================
+    // ===============================
   // FETCH CASES
   // ===============================
   const { data: cases = [] } = useQuery({
 
-    queryKey: ["calendar-cases"],
+    queryKey: ["calendar-cases", user?.role],
 
     queryFn: async () => {
 
-      const res = await api.get(
-        "/users/calendar-cases"
-      );
+      let res;
+
+      if (user?.role === "client") {
+
+        res = await api.get(
+          "/users/GetMyCases"
+        );
+
+      } else if (user?.role === "admin") {
+
+        res = await api.get(
+          "/users/GetAllCases"
+        );
+
+      } else {
+
+        res = await api.get(
+          "/users/GetLawyerCases"
+        );
+      }
 
       return res.data.data;
     },
+
+    enabled: !!user,
   });
 
   // ===============================
