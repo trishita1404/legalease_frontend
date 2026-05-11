@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -42,20 +43,19 @@ export default function RootLayout({
           selection:text-primary
         `}
       >
-        {/* The Navbar will now use the --sidebar or --background color naturally */}
-        <Navbar />
-        
-        {/* 
-          We use 'bg-background' here to ensure that any white space 
-          matches our professional slate-white theme.
-        */}
-        <main className="pt-20 grow bg-background">
-          <div className="max-w-360 mx-auto w-full px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
+        <QueryProvider>
 
-        <Footer />
+  <Navbar />
+
+  <main className="pt-20 grow bg-background">
+    <div className="max-w-360 mx-auto w-full px-4 sm:px-6 lg:px-8">
+      {children}
+    </div>
+  </main>
+
+  <Footer />
+
+</QueryProvider>
       </body>
     </html>
   );
