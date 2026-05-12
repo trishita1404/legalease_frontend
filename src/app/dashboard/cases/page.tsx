@@ -98,23 +98,59 @@ export default function CasesPage() {
     fetchData();
   }, [user]);
 
-  // ================= CREATE =================
-  const handleCreateCase = async () => {
-    try {
-      const res = await api.post("/users/CreateCase", {
-        ...form,
-        totalBilled: Number(form.totalBilled)
-      });
+   // ================= CREATE =================
+const handleCreateCase = async () => {
 
-      if (res.data.status === "success") {
-        setShowModal(false);
-        resetForm();
-        reloadCases();
-      }
-    } catch (err) {
-      console.error(err);
+  try {
+
+    console.log("CREATE CASE FORM:", form);
+
+    // ✅ FIXED PAYLOAD
+    const payload = {
+      caseCode: form.caseCode,
+      clientId: form.clientId,
+      projectTitle: form.projectTitle,
+      nextHearing: form.nextHearing,
+      caseStatus: form.caseStatus,
+      totalBilled: Number(form.totalBilled),
+    };
+
+    console.log("PAYLOAD:", payload);
+
+    const res = await api.post(
+      "/users/CreateCase",
+      payload
+    );
+
+    console.log("RESPONSE:", res.data);
+
+    if (res.data.status === "success") {
+
+      setShowModal(false);
+
+      resetForm();
+
+      reloadCases();
     }
-  };
+
+  } catch (err: unknown) {
+
+    console.error("CREATE CASE ERROR:", err);
+
+    const error = err as {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+    };
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to create case"
+    );
+  }
+};
 
   // ================= DELETE =================
   const handleDelete = async (id: string) => {
